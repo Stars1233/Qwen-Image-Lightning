@@ -5,6 +5,7 @@ We are excited to release the distilled version of [Qwen-Image](https://github.c
 
 ## 🔥 Latest News!!
 
+* Aug 11, 2025: 👋 Release [Qwen-Image-Lightning-4steps-V1.0](https://huggingface.co/lightx2v/Qwen-Image-Lightning/blob/main/Qwen-Image-Lightning-4steps-V1.0.safetensors).
 * Aug 08, 2025: 👋 Release [Qwen-Image-Lightning-8steps-V1.0](https://huggingface.co/lightx2v/Qwen-Image-Lightning/blob/main/Qwen-Image-Lightning-8steps-V1.0.safetensors).
 
 ## 📑 Todo List
@@ -16,7 +17,7 @@ We are excited to release the distilled version of [Qwen-Image](https://github.c
 
 ## 📑 Demo Images
 
-The prompts are from [Qwen-Image](https://github.com/QwenLM/Qwen-Image) and [Qwen-Image-Service](https://huggingface.co/spaces/Qwen/Qwen-Image). Generated with seed 42, you can reproduce the results with [examples/prompt_list.txt](examples/prompt_list.txt).
+The prompts are from [Qwen-Image](https://github.com/QwenLM/Qwen-Image), [Qwen-Image Blog](https://qwenlm.github.io/blog/qwen-image/) and [Qwen-Image-Service](https://huggingface.co/spaces/Qwen/Qwen-Image). Generated with seed 42, you can reproduce the results with [examples/prompt_list.txt](examples/prompt_list.txt).
 
 | Prompt         | Base NEF=100               | Qwen-Image-Lightning-8steps-V1.0 NEF=8|
 |-----------------|----------------------------|----------------------------|
@@ -26,6 +27,58 @@ The prompts are from [Qwen-Image](https://github.com/QwenLM/Qwen-Image) and [Qwe
 | A coffee shop entrance features a chalkboard sign reading "Qwen Coffee 😊 $2 per cup," with a neon light beside it displaying "通义千问". Next to it hangs a poster showing a beautiful Chinese woman, and beneath the poster is written "π≈3.1415926-53589793-23846264-33832795-02384197".   | ![badcase1](https://github.com/user-attachments/assets/7ec02505-d6e2-4397-93a0-fa3afb496c98)   | ![badcase1](https://github.com/user-attachments/assets/a2f519b9-132c-458b-bf39-dac86be2fe10)   |
 
 The last row shows a badcase of the distilled model.
+
+## 📑 Limitation
+
+Neither the distilled models nor the Qwen-Image base model can consistently generate perfect results. We observed that the same model exhibits varying performance for the same prompt under different resolutions. A specific test case might favor one model, while other cases might yield completely opposite results. We sampled a collection of prompts [examples/prompt_list.txt](examples/prompt_list.txt), and you can compare the performance of the distilled models and the base model by running the following scripts.
+
+## 🚀 Run Evaluation and Test
+
+
+#### Installation
+
+Please follow [Qwen-Image](https://github.com/QwenLM/Qwen-Image) to install the **Python Environment** and download the **Base Model**.
+
+#### Model Download
+
+Download models using huggingface-cli:
+``` sh
+pip install "huggingface_hub[cli]"
+huggingface-cli download lightx2v/Qwen-Image-Lightning --local-dir ./Qwen-Image-Lightning
+```
+
+#### Run 8-step Model
+
+``` sh
+# 8 steps, cfg 1.0
+python generate_with_diffusers.py \
+--prompt_list_file examples/prompt_list.txt \
+--out_dir test_lora_8_step_results \
+--lora_path Qwen-Image-Lightning/Qwen-Image-Lightning-8steps-V1.0.safetensors \
+--base_seed 42 --steps 8 --cfg 1.0
+```
+
+#### Run 4-step Model
+
+
+``` sh
+# 4 steps, cfg 1.0
+python generate_with_diffusers.py \
+--prompt_list_file examples/prompt_list.txt \
+--out_dir test_lora_4_step_results \
+--lora_path Qwen-Image-Lightning/Qwen-Image-Lightning-4steps-V1.0.safetensors \
+--base_seed 42 --steps 4 --cfg 1.0
+```
+
+#### Run base Model
+
+``` sh
+# 50 steps, cfg 4.0
+python generate_with_diffusers.py \
+--prompt_list_file examples/prompt_list.txt \
+--out_dir test_base_results \
+--base_seed 42 --steps 50 --cfg 4.0
+```
 
 ## 🎨 ComfyUI Workflow
 
@@ -42,44 +95,6 @@ ComfyUI workflow is available in the `workflows/` directory. The workflow is bas
 3. Place `Qwen-Image-Lightning-8steps-V1.0.safetensors` in the `ComfyUI/models/loras/` directory.
 4. Run the workflow to generate images with 8 steps
 
-## 🚀 Run Qwen-Image-Lightning-8steps-V1.0
-
-#### Installation
-
-Please follow [Qwen-Image](https://github.com/QwenLM/Qwen-Image) to install the **Python Environment** and download the **Base Model**.
-
-#### Model Download
-
-Download models using huggingface-cli:
-``` sh
-pip install "huggingface_hub[cli]"
-huggingface-cli download lightx2v/Qwen-Image-Lightning --local-dir ./Qwen-Image-Lightning
-```
-
-Run the distilled model and compare with the base model.
-
-#### Run 8-step Model
-
-``` sh
-# 8 steps, cfg 1.0
-python generate_with_diffusers.py \
---prompt_list_file examples/prompt_list.txt \
---out_dir test_lora_results \
---lora_path Qwen-Image-Lightning/Qwen-Image-Lightning-8steps-V1.0.safetensors \
---base_seed 42 
-```
-
-#### Run base Model
-
-``` sh
-# 50 steps, cfg 4.0
-python generate_with_diffusers.py \
---prompt_list_file examples/prompt_list.txt \
---out_dir test_base_results \
---base_seed 42 
-```
-
-
 ## License Agreement
 The models in this repository are licensed under the Apache 2.0 License. We claim no rights over the your generated contents, granting you the freedom to use them while ensuring that your usage complies with the provisions of this license. You are fully accountable for your use of the models, which must not involve sharing any content that violates applicable laws, causes harm to individuals or groups, disseminates personal information intended for harm, spreads misinformation, or targets vulnerable populations. For a complete list of restrictions and details regarding your rights, please refer to the full text of the [license](LICENSE.txt).
 
@@ -88,4 +103,4 @@ The models in this repository are licensed under the Apache 2.0 License. We clai
 
 We built upon and reused code from the following projects: [Qwen-Image](https://github.com/QwenLM/Qwen-Image), licensed under the Apache License 2.0.
 
-The evaluation text prompts are from [Qwen-Image Demo](https://huggingface.co/spaces/Qwen/Qwen-Image).
+The evaluation text prompts are from [Qwen-Image](https://github.com/QwenLM/Qwen-Image), [Qwen-Image Blog](https://qwenlm.github.io/blog/qwen-image/) and [Qwen-Image-Service](https://huggingface.co/spaces/Qwen/Qwen-Image).
